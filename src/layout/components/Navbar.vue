@@ -27,6 +27,12 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <div class="right-menu" @click="full">
+      <!-- 全屏 -->
+      <span v-show="isFull" class="el-icon-full-screen" />
+      <!-- 不是全屏 -->
+      <span v-show="!isFull" class="el-icon-rank" />
+    </div>
   </div>
 </template>
 
@@ -34,11 +40,16 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
-
+import screenfull from 'screenfull'
 export default {
   components: {
     Breadcrumb,
     Hamburger
+  },
+  data() {
+    return {
+      isFull: false // 是否全屏
+    }
   },
   computed: {
     ...mapGetters([
@@ -56,6 +67,16 @@ export default {
       sessionStorage.removeItem('user')
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+    full() {
+      screenfull.toggle()
+      if (!screenfull.isEnabled) {
+        this.$message({
+          message: '该浏览器不支持全屏功能',
+          type: 'warning'
+        })
+      }
+      this.isFull = !this.isFull
     }
   }
 }
@@ -90,7 +111,8 @@ export default {
     float: right;
     height: 100%;
     line-height: 50px;
-
+    margin-left: 20px;
+    cursor: pointer;
     &:focus {
       outline: none;
     }

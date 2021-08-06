@@ -34,7 +34,7 @@
         />
       </el-select>
       <el-select
-        v-model="value1"
+        v-model="value3"
         multiple
         collapse-tags
         style="margin-left: 20px;"
@@ -214,6 +214,7 @@ export default {
         label: '北京烤鸭'
       }],
       value1: [],
+      value3: [],
       list: null,
       lists: null,
       listLoading: true,

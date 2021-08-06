@@ -48,7 +48,7 @@ export default {
           recoder_guid: ''
         }
       },
-      pageSize: 10,
+      pageSize: 12,
       pagerCount: 5,
       currentPage: 1,
       total: null,
