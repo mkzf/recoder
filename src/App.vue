@@ -29,6 +29,7 @@ export default {
     ...mapGetters({ websock: 'websock' })
   },
   created() {
+    this.stopF5Refresh()
     // this.sendIP()
     this.$store.dispatch('websocket/WEBSOCKET_INIT', this.url).then(() => {
       setTimeout(() => {
@@ -61,13 +62,15 @@ export default {
       if (sessionStorage.getItem('user')) {
         console.log('user' + sessionStorage.getItem('user'))
         setTimeout(() => {
-          this.$store.dispatch(
-            'websocket/WEBSOCKET_REIVE',
-            JSON.parse(sessionStorage.getItem('user'))
-          ).then(() => {
-            // sessionStorage.removeItem('user')
-            this.$store.dispatch('websocket/sendPing', this.WsHeartbeat)
-          })
+          this.$store
+            .dispatch(
+              'websocket/WEBSOCKET_REIVE',
+              JSON.parse(sessionStorage.getItem('user'))
+            )
+            .then(() => {
+              // sessionStorage.removeItem('user')
+              this.$store.dispatch('websocket/sendPing', this.WsHeartbeat)
+            })
         }, 0)
       }
     },
@@ -78,6 +81,30 @@ export default {
       } else {
         this.location = false
       }
+    },
+    stopF5Refresh() {
+      document.onkeydown = function(e) {
+        var evt = window.event || e
+        var code = evt.keyCode || evt.which
+        // 屏蔽F1---F12
+        if (code > 111 && code < 124) {
+          if (evt.preventDefault) {
+            evt.preventDefault()
+          } else {
+            evt.keyCode = 0
+            evt.returnValue = false
+          }
+        }
+      }
+      // 禁止鼠标右键菜单
+      document.oncontextmenu = function(e) {
+        return false
+      }
+      // 阻止后退的所有动作，包括 键盘、鼠标手势等产生的后退动作。
+      history.pushState(null, null, window.location.href)
+      window.addEventListener('popstate', function() {
+        history.pushState(null, null, window.location.href)
+      })
     }
   }
 }

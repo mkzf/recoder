@@ -143,14 +143,7 @@ import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
-      tableDatas: [
-        {
-          usr_guid: null,
-          usr_name: null,
-          usr_passwd: null,
-          usr_type: null
-        }
-      ],
+      tableDatas: [],
       tableData: null,
       loading: false,
       search: '',
@@ -220,8 +213,10 @@ export default {
     stateFormatter(row, column) {
       if (row.usr_state === 1) {
         return '在线'
-      } else {
+      } else if (row.usr_state === 0) {
         return '离线'
+      } else {
+        return
       }
     },
     // 权限格式化
@@ -230,8 +225,10 @@ export default {
         return '超级管理员'
       } else if (row.usr_type === '1') {
         return '管理员'
-      } else {
+      } else if (row.usr_type > '1') {
         return '普通用户'
+      } else {
+        return
       }
     },
     // 初始化请求全部数据

@@ -96,9 +96,6 @@ export default {
     }
     this.getTime()
   },
-  beforeDestroy() {
-
-  },
   methods: {
     //   stopAudio(val) {
 
@@ -200,21 +197,18 @@ export default {
       /* 采样数据总数,即数据总大小-44 */
       view.setUint32(offset, dataLength, true)
       offset += 4
-
       function floatTo32BitPCM(output, offset, input) {
         input = new Int32Array(input)
         for (var i = 0; i < input.length; i++, offset += 4) {
           output.setInt32(offset, input[i], true)
         }
       }
-
       function floatTo16BitPCM(output, offset, input) {
         input = new Int16Array(input)
         for (var i = 0; i < input.length; i++, offset += 2) {
           output.setInt16(offset, input[i], true)
         }
       }
-
       function floatTo8BitPCM(output, offset, input) {
         input = new Int8Array(input)
         for (var i = 0; i < input.length; i++, offset++) {
@@ -380,7 +374,6 @@ export default {
       this.audioContext.close()
       this.$store.dispatch('websocket/WEBSOCKET_REIVE', this.quit)
     }
-
   }
 }
 </script>

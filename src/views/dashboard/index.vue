@@ -121,7 +121,6 @@ export default {
       // -------------------------------------------------------
       this.picks.rname = name
       this.picks.recoder.recoder_guid = recoder_guid
-
       this.$router.push({ name: 'picks', params: { picks: this.picks }})
     },
     box(status) {
