@@ -8,7 +8,7 @@
       <div class="monitor-db">{{ db }}</div>
       <div class="monitor-canvas">
         <canvas id="canvas" ref="canvas">
-          你这不行啊..不支持canvas
+          你这不行啊..不支持1canvas
         </canvas>
       </div>
     </div>
