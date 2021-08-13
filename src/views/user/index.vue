@@ -120,7 +120,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancel">取 消</el-button>
-        <el-button type="primary" @click="determine">确 定</el-button>
+        <el-button type="primary" :plain="true" @click="determine">确 定</el-button>
       </div>
     </el-dialog>
     <div class="paging">
@@ -213,7 +213,7 @@ export default {
     stateFormatter(row, column) {
       if (row.usr_state === 1) {
         return '在线'
-      } else if (row.usr_state === 0) {
+      } else if (row.usr_state === 0 || row.usr_state < 0) {
         return '离线'
       } else {
         return
@@ -330,16 +330,30 @@ export default {
         this.paging()
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
         this.loading = false
+        this.$message({
+          showClose: true,
+          message: '添加成功',
+          type: 'success'
+        })
       } else {
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
         this.dialogFormVisible = false
-        alert('添加失败！！！')
+        this.$message({
+          showClose: true,
+          message: '添加失败',
+          type: 'error'
+        })
         this.loading = false
       }
     },
     // 判断删除用户是否成功
     delcode() {
       if (this.msg.code === 200) {
+        this.$message({
+          showClose: true,
+          message: '删除成功',
+          type: 'success'
+        })
         const add = this.tableData.filter(
           item =>
             !this.multipleSelection.some(ele => ele.usr_guid === item.usr_guid)
@@ -349,7 +363,11 @@ export default {
         this.paging()
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
       } else {
-        alert('删除失败！！！')
+        this.$message({
+          showClose: true,
+          message: '删除失败',
+          type: 'error'
+        })
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
       }
     },
@@ -376,7 +394,6 @@ export default {
 class GUID {
   constructor() {
     this.date = new Date()
-
     /* 判断是否初始化过，如果初始化过以下代码，则以下代码将不再执行，实际中只执行一次 */
     if (typeof this.newGUID !== 'function') {
       /* 生成GUID码 */

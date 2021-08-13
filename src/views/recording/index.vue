@@ -2,14 +2,14 @@
   <!-- <div class="recording"> -->
   <div class="app-container">
     <div class="screen">
-      <span class="demonstration">折叠展示Tag</span>
+      <span class="demonstration">录音主机</span>
       <el-cascader
         :options="options"
         :props="props"
         collapse-tags
         clearable
       />
-      <span class="demonstration">带快捷选项</span>
+      <span class="demonstration">时间</span>
       <el-date-picker
         v-model="value2"
         type="datetimerange"
@@ -19,6 +19,7 @@
         end-placeholder="结束日期"
         align="center"
       />
+      <span class="demonstration">录音类型</span>
       <el-select
         v-model="value1"
         multiple
@@ -33,6 +34,7 @@
           :value="item.value"
         />
       </el-select>
+      <span class="demonstration">敏感词</span>
       <el-select
         v-model="value3"
         multiple
@@ -48,7 +50,19 @@
         />
       </el-select>
       <el-button type="info" icon="el-icon-search">搜索</el-button>
-      <el-button type="info" icon="el-icon-delete-solid">删除</el-button>
+      <el-popconfirm
+        confirm-button-text="好的"
+        cancel-button-text="不用了"
+        icon="el-icon-info"
+        icon-color="red"
+        title="这是一段内容确定删除吗？"
+        @onConfirm="del_Recording_record"
+      >
+        <!-- <el-button slot="reference">删除</el-button> -->
+        <el-button slot="reference" type="info" icon="el-icon-delete-solid">删除</el-button>
+      </el-popconfirm>
+
+      <!-- <el-button type="info" icon="el-icon-delete-solid" @click="del_Recording_record">删除</el-button> -->
       <el-button type="info"><svg-icon icon-class="导出" />&nbsp;导出</el-button>
     </div>
     <!-- 表单 -->
@@ -60,7 +74,12 @@
       border
       fit
       highlight-current-row
+      @selection-change="handleSelectionChange"
     >
+      <el-table-column
+        type="selection"
+        width="55"
+      />
       <el-table-column align="center" label="ID" width="95">
         <template slot-scope="scope">
           {{ scope.$index }}
@@ -221,13 +240,19 @@ export default {
       currentPage: 1,
       pageSize: 10,
       pagerCount: 7,
-      total: 0
+      total: 0,
+      multipleSelection: []
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    // 判断是否选中数据
+    handleSelectionChange(val) {
+      this.multipleSelection = val
+      console.log(this.multipleSelection)
+    },
     fetchData() {
       this.listLoading = true
       getList().then(response => {
@@ -251,6 +276,23 @@ export default {
       const start = (this.currentPage - 1) * this.pageSize
       const end = this.currentPage * this.pageSize
       this.lists = this.list.slice(start, end)
+    },
+    del_Recording_record() {
+      const num = this.multipleSelection
+      if (num.toString()) {
+        this.$message({
+          showClose: true,
+          message: '删除成功',
+          type: 'success'
+        })
+      } else {
+        this.$message({
+          customClass: 'msg',
+          showClose: true,
+          message: '请选择要删除的记录',
+          type: 'warning'
+        })
+      }
     }
   }
 }

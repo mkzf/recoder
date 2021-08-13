@@ -149,17 +149,32 @@ const actions = {
   },
   // 发送消息
   WEBSOCKET_REIVE({ commit }, data) {
-    if (state.websock !== null && state.websock.readyState === 3) {
-      state.websock.close()
+    if (data !== null && data !== '') {
+      if (state.websock !== null && state.websock.readyState === 3) {
+        state.websock.close()
       // createSocket(url) // 重连
-    } else if (state.websock.readyState === 1) {
-      state.websock.send(JSON.stringify(data))
-      console.log('ws发送:' + JSON.stringify(data))
-    } else if (state.websock.readyState === 0) {
-      setTimeout(() => {
+      } else if (state.websock.readyState === 1) {
         state.websock.send(JSON.stringify(data))
-      }, 3000)
+        console.log('ws发送:' + JSON.stringify(data))
+      } else if (state.websock.readyState === 0) {
+        setTimeout(() => {
+          state.websock.send(JSON.stringify(data))
+        }, 3000)
+      }
+    } else {
+      state.eventlist = null
     }
+    //   if (state.websock !== null && state.websock.readyState === 3) {
+    //   state.websock.close()
+    //   // createSocket(url) // 重连
+    // } else if (state.websock.readyState === 1) {
+    //   state.websock.send(JSON.stringify(data))
+    //   console.log('ws发送:' + JSON.stringify(data))
+    // } else if (state.websock.readyState === 0) {
+    //   setTimeout(() => {
+    //     state.websock.send(JSON.stringify(data))
+    //   }, 3000)
+    // }
   },
   /** 发送心跳 */
   sendPing({ commit }, WsHeartbeat) {
