@@ -76,7 +76,9 @@ export default {
     },
     Disconnect() {
       const readyState = this.websock.readyState
-      if (readyState === 3) {
+      if (readyState === 0) {
+        // alert('服务器连接失败')
+      } else if (readyState === 3) {
         this.loading = true
       } else {
         this.location = false

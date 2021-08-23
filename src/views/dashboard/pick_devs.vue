@@ -98,9 +98,10 @@ export default {
               var pick = JSON.stringify(arr)
               array.push(JSON.parse(pick))
             }
-            if (JSON.parse(val).ord === 'get_pick_devs_by_recoder_ret') {
-              if (JSON.parse(val).pick_infos) {
-                var picks = JSON.parse(val).pick_infos
+            const msg = JSON.parse(val)
+            if (msg.ord === 'get_pick_devs_by_recoder_ret') {
+              if (msg.pick_infos) {
+                var picks = msg.pick_infos
                 for (let j = 0; j < array.length; j++) {
                   for (let k = 0; k < picks.length; k++) {
                     if (array[j].channel === picks[k].channel) {
@@ -112,10 +113,20 @@ export default {
                   return a.channel - b.channel
                 })
                 this.pick_infos = array
-                console.log('pick_infos:' + JSON.stringify(this.pick_infos))
+                // console.log('pick_infos:' + JSON.stringify(this.pick_infos))
               } else {
                 this.pick_infos = array
-                console.log('null:' + JSON.stringify(this.pick_infos))
+                // console.log('null:' + JSON.stringify(this.pick_infos))
+              }
+            }
+            if (msg.ord === 'dev_update_state') {
+              if (msg.recoder_guid === this.picks.recoder.recoder_guid) {
+                for (const i in this.pick_infos) {
+                  if (this.pick_infos[i].dev_guid === msg.dev_guid) {
+                    this.pick_infos.state = msg.state
+                    return
+                  }
+                }
               }
             }
           }
@@ -159,7 +170,7 @@ export default {
     checked(event) {
       console.log(this.arithmetic)
       if (event.target.checked) {
-        console.log('123' + event.target.checked)
+        // console.log('123' + event.target.checked)
         this.arithmetic = true
       } else {
         this.arithmetic = false
@@ -198,7 +209,8 @@ export default {
     color: rgb(229, 240, 240);
     text-align: center;
     margin-top: 12px;
-    margin-right: 10px;
+    // margin-right: 10px;
+    margin-left: 10px;
     border-radius: 8px 8px 8px 8px;
     cursor: pointer;
     overflow: hidden;
@@ -220,7 +232,7 @@ export default {
     transform: translate3d(0, -5px, 0);
   }
   &-recoder {
-    width: 1646px;
+    width: 100%;
     height: 50px;
     background: rgb(113, 101, 223);
     line-height: 50px;

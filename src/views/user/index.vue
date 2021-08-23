@@ -34,6 +34,7 @@
       <el-table-column
         prop="usr_name"
         label="姓名"
+        sortable
         width="200"
         header-align="center"
         align="center"
@@ -68,8 +69,8 @@
         header-align="center"
         align="center"
       />
-      <el-table-column align="right">
-        <template slot="header" width="500">
+      <el-table-column align="left" width="280">
+        <template slot="header">
           <el-input
             v-model="search"
             size="medium"
@@ -77,18 +78,41 @@
           />
         </template>
       </el-table-column>
-      <el-table-column align="right" width="160">
-        <template slot="header" slot-scope="scope">
-          <el-button size="medium" :type="butType" @click="handleDeleteAll">{{
-            butValue
-          }}</el-button>
+      <el-table-column align="right" width="90">
+        <template slot="header">
+          <el-button size="small" type="success" @click="handleAdd()">
+            添加用户
+          </el-button>
         </template>
+      </el-table-column>
+      <el-table-column align="left" width="90">
+        <template slot="header">
+          <el-popconfirm
+            title="确定删除此用户吗？"
+            @onConfirm="handleDeleteAll()"
+          >
+            <el-button slot="reference" size="small" type="danger">
+              批量删除
+            </el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+      <el-table-column align="left">
+        <!-- <template slot="header" slot-scope="scope" /> -->
         <template slot-scope="scope">
           <el-button
             size="mini"
             type="info"
             @click="handleEdit(scope.$index, tableData)"
           >修改</el-button>
+          <el-popconfirm
+            title="确定删除此用户吗？"
+            @onConfirm="handleDelete(scope.$index, scope.row)"
+          >
+            <el-button slot="reference" size="mini" type="danger">
+              删除
+            </el-button>
+          </el-popconfirm>
         </template>
       </el-table-column>
     </el-table>
@@ -148,6 +172,8 @@ export default {
       loading: false,
       search: '',
       multipleSelection: [],
+      delUser: [],
+      ifAll: false,
       form: {
         usr_guid: '',
         usr_name: '',
@@ -262,9 +288,20 @@ export default {
         this.form = {}
       }
     },
+    handleDelete(index, row) {
+      var user = {
+        ord: 'req_batch_del_usr',
+        usr_guids: []
+      }
+      user.usr_guids.push(row.usr_guid)
+      this.delUser.push(row)
+      this.ifAll = true
+      this.$store.dispatch('websocket/WEBSOCKET_REIVE', user)
+    },
     // 通过判断是否选中了数据，来确定当前是否是删除还是添加用户
     handleDeleteAll() {
-      if (this.butValue === '删除用户') {
+      const num = this.multipleSelection.toString()
+      if (num) {
         var user = {
           ord: 'req_batch_del_usr',
           usr_guids: []
@@ -272,60 +309,43 @@ export default {
         for (var i = 0; i < this.multipleSelection.length; i++) {
           user.usr_guids.push(this.multipleSelection[i].usr_guid)
         }
-        this.$store.dispatch('websocket/WEBSOCKET_REIVE', user).then(() => {
-          // setTimeout(() => {
-          // }, 1)
-        })
-        // this.tableData.splice(0, this.tableData.length)
+        this.$store.dispatch('websocket/WEBSOCKET_REIVE', user)
       } else {
-        this.handleEdit(null, null)
+        this.$message({
+          showClose: true,
+          message: '请选择将要删除的用户',
+          type: 'warning'
+        })
       }
     },
-    S4() {
-      return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1)
-    },
-    // 生成guid
-    guid() {
-      return (
-        this.S4() +
-        this.S4() +
-        '-' +
-        this.S4() +
-        '-' +
-        this.S4() +
-        '-' +
-        this.S4() +
-        '-' +
-        this.S4() +
-        this.S4() +
-        this.S4()
-      )
+    handleAdd() {
+      this.handleEdit(null, null)
     },
     // 添加用户
     determine() {
-      if (this.butValue === '添加用户') {
-        this.loading = true
-        var guid = new GUID()
-        var radom = guid.newGUID()
-        this.form.usr_guid = radom
-        var addUser = {
-          ord: 'req_add_usr',
-          usr_info: {}
-        }
-        addUser.usr_info = this.form
-        console.log(this.form.usr_guid)
-        this.$store.dispatch('websocket/WEBSOCKET_REIVE', addUser).then(() => {
-          // this.dialogFormVisible = false
-          this.dialogFormVisible = false
-        })
+      // if (this.butValue === '添加用户') {
+      this.loading = true
+      var guid = new GUID()
+      var radom = guid.newGUID()
+      this.form.usr_guid = radom
+      var addUser = {
+        ord: 'req_add_usr',
+        usr_info: {}
       }
+      addUser.usr_info = this.form
+      console.log(this.form.usr_guid)
+      this.$store.dispatch('websocket/WEBSOCKET_REIVE', addUser).then(() => {
+        // this.dialogFormVisible = false
+        this.dialogFormVisible = false
+      })
+      // }
     },
     // 判断添加用户是否成功
     addcode() {
       if (this.msg.code === 200) {
         console.log('from' + JSON.stringify(this.form))
         this.form.usr_state = -1
-        this.tableData.push(this.form)
+        this.tableData.unshift(this.form)
         this.total = this.tableData.length
         this.paging()
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
@@ -354,10 +374,19 @@ export default {
           message: '删除成功',
           type: 'success'
         })
-        const add = this.tableData.filter(
-          item =>
-            !this.multipleSelection.some(ele => ele.usr_guid === item.usr_guid)
-        )
+        let add = []
+        if (this.ifAll) {
+          add = this.tableData.filter(
+            item =>
+              !this.delUser.some(ele => ele.usr_guid === item.usr_guid)
+          )
+          this.ifAll = false
+        } else {
+          add = this.tableData.filter(
+            item =>
+              !this.multipleSelection.some(ele => ele.usr_guid === item.usr_guid)
+          )
+        }
         this.tableData = add
         this.total = this.tableData.length
         this.paging()
@@ -479,12 +508,12 @@ class GUID {
   }
 }
 </script>
-<style>
-.el-table .warning-row {
+<style lang="less"  scoped>
+.el-table /deep/  .warning-row {
   background: rgb(211, 211, 209);
 }
 
-.el-table .success-row {
+.el-table /deep/ .success-row {
   background: #ddf1d2;
 }
 

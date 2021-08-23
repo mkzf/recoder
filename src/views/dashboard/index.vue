@@ -168,11 +168,11 @@ export default {
     color: rgb(250, 250, 250);
     margin: 25px 25px 25px 25px;
     border-radius: 10px 10px 10px 10px;
-    cursor: pointer;
     overflow: hidden;
     text-align: center;
     .box-A {
       background: rgb(9, 32, 73);
+      cursor: pointer;
       .recoderName{
         height: 100px;
         line-height: 140px;
@@ -184,12 +184,13 @@ export default {
     }
     .box-B {
       background: rgb(123, 124, 128);
-      height: 200px;
       pointer-events: none;
      .recoderName{
+       height: 100px;
         line-height: 140px;
       }
       .recoderIp{
+        height: 100px;
         line-height: -140px;
       }
     }

@@ -119,7 +119,7 @@ export default {
   },
   computed: {
     ...mapGetters({
-      eventlist: 'eventlist'
+      eventlist: 'eventlist', websock: 'websock'
     })
   },
   watch: {
@@ -185,21 +185,29 @@ export default {
       this.$refs.loginForm.validate(valid => {
         this.user.usr_name = this.loginForm.username
         this.user.usr_passwd = this.loginForm.password
-        if (valid) {
-          this.loading = true
-          this.$store
-            .dispatch('websocket/WEBSOCKET_REIVE', this.user)
-            .then(() => {
-              console.log(this.user)
-              console.log('123')
-              // this.loading = false
-            })
-            .catch(() => {
-              this.loading = false
-            })
+        if (this.websock.readyState === 0 || this.websock.readyState === 3) {
+          this.$message({
+            showClose: true,
+            message: '服务器连接失败',
+            type: 'error'
+          })
         } else {
-          console.log('error submit!!')
-          return false
+          if (valid) {
+            this.loading = true
+            this.$store
+              .dispatch('websocket/WEBSOCKET_REIVE', this.user)
+              .then(() => {
+                console.log(this.user)
+                console.log('123')
+              // this.loading = false
+              })
+              .catch(() => {
+                this.loading = false
+              })
+          } else {
+            console.log('error submit!!')
+            return false
+          }
         }
       })
     },
@@ -213,11 +221,20 @@ export default {
           this.loading = false
         })
       } else if (this.msg.code === 0) {
-        alert('登录失败')
+        // alert('登录失败')
+        this.$message({
+          showClose: true,
+          message: '账号或密码错误输入错误!',
+          type: 'error'
+        })
         this.loading = false
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
       } else if (this.msg.code === 100) {
-        alert('此账号在别处登录，请稍后再试！！！')
+        // alert('此账号在别处登录，请稍后再试！！！')
+        this.$message({
+          message: '此账号在别处登录，请稍后再试！！！',
+          type: 'warning'
+        })
         this.loading = false
         this.$store.commit('websocket/WEBSOCKET_REIVE', '')
       }

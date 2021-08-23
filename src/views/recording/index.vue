@@ -7,6 +7,7 @@
         :options="options"
         :props="props"
         collapse-tags
+        style="margin-left: 10px;"
         clearable
       />
       <span class="demonstration">时间</span>
@@ -18,15 +19,17 @@
         start-placeholder="开始日期"
         end-placeholder="结束日期"
         align="center"
+        style="margin-left: 10px;"
       />
       <span class="demonstration">录音类型</span>
       <el-select
         v-model="value1"
         multiple
         collapse-tags
-        style="margin-left: 20px;"
+        style="margin-left: 10px;"
         placeholder="请选择"
       >
+        <!--  -->
         <el-option
           v-for="item in options1"
           :key="item.value"
@@ -39,7 +42,7 @@
         v-model="value3"
         multiple
         collapse-tags
-        style="margin-left: 20px;"
+        style="margin-left: 10px;"
         placeholder="请选择"
       >
         <el-option
@@ -49,21 +52,17 @@
           :value="item.value"
         />
       </el-select>
-      <el-button type="info" icon="el-icon-search">搜索</el-button>
+      <el-button class="demonstration" type="info" icon="el-icon-search">搜索</el-button>
       <el-popconfirm
-        confirm-button-text="好的"
-        cancel-button-text="不用了"
-        icon="el-icon-info"
-        icon-color="red"
-        title="这是一段内容确定删除吗？"
+        title="确定删除此记录吗？"
         @onConfirm="del_Recording_record"
       >
         <!-- <el-button slot="reference">删除</el-button> -->
-        <el-button slot="reference" type="info" icon="el-icon-delete-solid">删除</el-button>
+        <el-button slot="reference" class="demonstration" type="info" icon="el-icon-delete-solid">删除</el-button>
       </el-popconfirm>
 
       <!-- <el-button type="info" icon="el-icon-delete-solid" @click="del_Recording_record">删除</el-button> -->
-      <el-button type="info"><svg-icon icon-class="导出" />&nbsp;导出</el-button>
+      <el-button class="demonstration" type="info"><svg-icon icon-class="导出" />&nbsp;导出</el-button>
     </div>
     <!-- 表单 -->
     <!-- <div class="app-container"> -->
@@ -126,7 +125,7 @@
       />
     </div>
     <div>
-      <audio src="http://wvideo.spriteapp.cn/video/2016/0328/56f8ec01d9bfe_wpd.mp4" />
+      <audio src="http://music.163.com/song/media/outer/url?id=447925558.mp3" />
     </div>
   </div>
 </template>
@@ -298,11 +297,18 @@ export default {
 }
 </script>
 
-<style>
+<style lang="less" scoped>
   .screen{
     padding-bottom: 15px;
   }
   .paging{
     padding-top: 15px;
+  }
+  .demonstration{
+    margin-left: 20px;
+  }
+  .demonstration:nth-child(1){
+    margin: 0px;
+    padding: 0px;
   }
 </style>
